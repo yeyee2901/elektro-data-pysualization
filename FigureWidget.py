@@ -53,6 +53,12 @@ class FigureWidget(QWidget):
         self.layout_model.addWidget(self.Figure, 1, 0, 4, 3)
         for n in range(4):
             self.layout_model.setRowStretch(n+1, 7)
+    
+    def PlotData(self, x_data, y_data):
+        self.x_data = x_data
+        self.y_data = y_data
+
+        self.graph.setData(self.x_data, self.y_data)
 
 
 # if __name__ == '__main__':

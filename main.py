@@ -58,8 +58,8 @@ class WindowUtama(QMainWindow):
         self.x_data = np.arange(0, 2, 1/10000)
         self.y_data = np.random.normal(loc=2.0, size=np.size(self.x_data))
 
-        for plot in self.List_of_Plots:
-            plot.graph.setData(self.x_data, self.y_data)
+        for plot_n in self.List_of_Plots:
+            plot_n.PlotData(self.x_data, self.y_data)
 
 
 if __name__ == '__main__':
