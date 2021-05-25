@@ -1,7 +1,7 @@
 # # Testing Purpose --------------------------------
-# from PyQt5.QtWidgets import QApplication
-# from PyQt5.QtCore import QTimer
-# from sys import exit, argv
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QTimer
+from sys import exit, argv
 # # Testing Purpose --------------------------------
 
 # Modules ---------------------------------------- 
@@ -43,7 +43,6 @@ class FigureWidget(QWidget):
         self.Figure = PlotWidget()
         self.Figure.setYRange(self.y_min, self.y_max)
         self.graph = PlotCurveItem(pen = self.color )
-        self.graph.viewPos()
 
         #plot initial data
         self.graph.setData(self.x_data, self.y_data)
@@ -61,14 +60,14 @@ class FigureWidget(QWidget):
         self.graph.setData(self.x_data, self.y_data)
 
 
-# if __name__ == '__main__':
-#     app = QApplication(argv)
+if __name__ == '__main__':
+    app = QApplication(argv)
 
-#     x_data = np.arange(0, 100)
-#     y_data = np.array([0] * np.size(x_data))
+    x_data = np.arange(0, 100)
+    y_data = np.array([0] * np.size(x_data))
 
-#     MainFigure = FigureWidget(xdata=x_data, ydata=y_data)
-#     MainFigure.showMaximized()
+    MainFigure = FigureWidget(xdata=x_data, ydata=y_data)
+    MainFigure.showMaximized()
 
 
-#     exit(app.exec_())
+    exit(app.exec_())

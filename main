@@ -1,0 +1,133 @@
+#!/usr/bin/python3
+# User Module ---------------------------------------------
+from FigureWidget import *
+from ChannelWidget import *
+
+# Pre defined Module --------------------------------------
+from sys import exit, argv
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QGridLayout
+from PyQt5.QtCore import QTimer
+import socket
+# import time
+
+
+# GLOBAL VARS ---------------------------------------------
+IP_ADDRESS = '192.168.0.126'
+PORT = 6969
+DATA_LENGTH = 2 ** 10
+Y_LIMIT = [-1, 4]
+
+
+# MAIN CLASS ----------------------------------------------
+
+class WindowUtama(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.__serverSuccessFlag = False
+        self.count = 0
+        self.x_data = np.arange(DATA_LENGTH)
+        self.y_data = [0] * np.size(self.x_data)
+        #self.y_data = np.array([0] * np.size(self.x_data))
+
+        self.initServer()
+
+        if self.__serverSuccessFlag:
+            self.initUi()
+            self.resize(1000, 700)
+            self.show()
+            self.setTimer()
+        else:
+            exit(1)
+
+    def initServer(self):
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.address = (IP_ADDRESS, PORT)
+            self.sock.bind(self.address)
+            self.sock.listen()
+            print("Init server success!")
+            print(f"Server at {IP_ADDRESS}:{PORT}")
+            self.conn, self.addr = self.sock.accept()
+            print(f"Client from: {self.addr}")
+
+            self.__serverSuccessFlag = True
+        except:
+            print("Init server failed :(")
+
+    def initUi(self):
+        self.setWindowTitle("Elektro - (Serial) Data Pysualization")
+
+        # config main widget
+        self.MainWidget = QWidget()
+        self.MainWidgetLayout = QGridLayout()
+        self.MainWidget.setLayout(self.MainWidgetLayout)
+
+        # place the main widget in main window
+        self.setCentralWidget(self.MainWidget)
+
+        # INIT PLOTS -------------------------------------------------
+        self.List_of_Plots = []
+        for n in range(1):
+            self.plot_n = FigureWidget(title=f"Figure {n+1}", color=20*n, yRange=Y_LIMIT)
+            self.List_of_Plots.append(self.plot_n)
+
+        # INIT CHANNEL INFO ------------------------------------------
+        self.List_of_channels = []
+        #for n in range(2):
+        #    self.channel_n = ChannelWidget(title="Channel", num=n+1)
+        #    self.List_of_channels.append(self.channel_n)
+
+
+        # ADD WIDGETS TO LAYOUT --------------------------------------
+        self.MainWidgetLayout.addWidget(self.List_of_Plots[0], 0, 0)
+        # self.MainWidgetLayout.addWidget(self.List_of_Plots[1], 1, 0)
+
+        #self.MainWidgetLayout.addWidget(self.List_of_channels[0], 0, 2)
+        #self.MainWidgetLayout.addWidget(self.List_of_channels[1], 1, 2)
+        
+    
+    def setTimer(self):
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.updateAll)
+        self.timer.start(0)
+    
+    def updateAll(self):
+
+        # receive data from socket stream
+        try:
+            datas = self.conn.recv(1024).decode("utf-8").split(",")[:5]
+            NEWDATA_LENGTH = len(datas)
+            for index in range(len(datas)):
+                if datas[index] == '':
+                    datas[index] = datas[index-1]
+                datas[index] = float(datas[index])
+
+            if not datas:
+                print("Client disconnected")
+                self.conn.close()
+                self.sock.close()
+                exit(1)
+            # print(f"{datas} - length {len(datas)}")
+
+            self.y_data += datas
+            del self.y_data[0:NEWDATA_LENGTH]
+
+            # self.y_data.append(new_data)
+            # self.y_data.pop(0)
+
+            for plot_n in self.List_of_Plots:
+                plot_n.PlotData(self.x_data, self.y_data)
+        except KeyboardInterrupt:
+            print("\nKeyboard Interrupted!")
+            self.conn.close()
+            self.sock.close()
+            exit(1)
+
+
+if __name__ == '__main__':
+    app = QApplication(argv)
+
+    main = WindowUtama()
+
+    exit(app.exec_())
