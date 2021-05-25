@@ -18,7 +18,8 @@ import numpy as np
 y_data = # wherever you want to grab the data from
 x_data = np.arange(0, np.size(y_data))
 ```
-
+  
+&nbsp;
 ### Progress (25 May 2021) :
 
 - Now user can plot data using 2 ways: TCP socket or Serial at 230400 baud.
@@ -28,7 +29,7 @@ x_data = np.arange(0, np.size(y_data))
 interesting to look at < 40 Hz for TCP througput.
 
 &nbsp;  
-# How to use Serial Plotter:
+#### How to use Serial Plotter:
 - Open the arduino sketch "DataLogger.ino" using ArduinoIDE and upload it to your
 Arduino Board
 - Change the PORT from "main_SerialVersion.py" to suit your Arduino PORT.
@@ -37,4 +38,5 @@ Arduino Board
 - Tested on Linux Pop-OS 20.04
 
 &nbsp;  
-# Pictures:  
+#### Pictures:  
+![image](https://user-images.githubusercontent.com/55247343/119500799-63130d80-bd92-11eb-8fc5-7e7ec7322045.png)  
